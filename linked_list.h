@@ -7,7 +7,7 @@ using namespace std;
 
 template<class T>
 struct Node{
-    Node* next = nullptr;
+    Node* link = nullptr;
     T value; = 0; 
     
 };
@@ -43,17 +43,31 @@ class List342{
     bool Merge(List342& list1); //definetely uses DeleteList()
 
     //operator overloads
-    List342& operator+=(const List342 &other);
+    List342& operator+=(const List342 &other); 
 
     List342 operator+(const List342 &other) const;
 
     friend ostream& operator<<(ostream& stream, const List342& print_list) const; 
 
-    bool operator== 
+    bool operator==(const List342 &other) const; 
+
+    List342& operator=(list342 &other); // needs to dcall DeleteList(); 
 
 
     private:
 
+    //private method to Sort list
+    //bool Sort(Node* insert_node); 
+
+    //checks to see if a T objct is in the list. 
+    bool Contains(const T* obj) const; 
+
+    Node head_; 
+    Node tail_; 
+    unsigned int size_; 
+
+
 
 };
 #endif
+
