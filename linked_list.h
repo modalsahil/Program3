@@ -59,6 +59,7 @@ private:
     // bool Sort(Node* insert_node);
 
     // checks to see if a T objct is in the list.
+    bool ClearNode(Node<T> *clear_node);
     bool Contains(const T *obj) const;
 
     Node<T> *head_;
@@ -78,18 +79,19 @@ bool List342<T>::Insert(T *obj) {
     cout << "here 1" << endl;
     Node<T> *insert_node = new Node<T>;
     insert_node->value = *obj;
-
-    Node<T> *next_node = new Node<T>;
-    next_node = head_;
     if (head_ == nullptr) {
         head_ = insert_node;
-        return true; 
+        return true;
     }
+    Node<T> *next_node = new Node<T>;
+    next_node = head_;
+
     for (int i = 0; i < size(); i++) {
-        if (next_node->link->value > insert_node->value) {
+        if (*(next_node->link)->value > *(insert_node)->value) {
             insert_node->link = next_node->link;
             next_node->link = insert_node;
             size_++;
+
             return true;
         } else if (next_node->value == insert_node->value) {
             insert_node = nullptr;
@@ -99,6 +101,12 @@ bool List342<T>::Insert(T *obj) {
     }
     cout << "Failed to insert " << *obj << endl;
     return false;
+}
+template <class T>
+bool List342<T>::ClearNode(Node<T> *clear_node) {
+    clear_node = nullptr;
+    delete clear_node;
+    return true;
 }
 
 template <class T>
