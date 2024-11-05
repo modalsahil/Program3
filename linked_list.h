@@ -8,7 +8,7 @@ using namespace std;
 template <class T>
 struct Node {
     Node *link = nullptr;
-    T value = 0;
+    T* value = 0;
 };
 
 template <class T>
@@ -21,7 +21,7 @@ public:
     // deconstructor
     ~List342();
 
-    // takes input from a file and builds list
+    // takes input from a file and builds list 
     bool BuildList(string file_name);
 
     bool Insert(T *obj);
@@ -40,12 +40,12 @@ public:
     void DeleteList(); // probably uses Remove()
 
     // merges 2 lists, deletes list1
-    bool Merge(List342 &list1); // definetely uses DeleteList()
+    bool Merge(List342 &list1); // definetely uses DeleteList() //O(n)
 
     // operator overloads
-    List342 &operator+=(const List342 &other);
+    List342 &operator+=(const List342 &other); // O(n)
 
-    List342 operator+(const List342 &other) const;
+    List342 operator+(const List342 &other) const; // O(n)
 
     template <typename U>
     friend ostream &operator<<(ostream &stream, const List342<U> &print_list);
@@ -72,25 +72,36 @@ List342<T>::List342() : head_(nullptr) {
 
 template <class T>
 List342<T>::~List342() {
+
+}
+
+template <class T>
+bool List342<T>::BuildList(string file_name) {
+    ifstream in_file;
+    Node<T> temp = new Node<T>();
+
+
 }
 
 template <class T>
 bool List342<T>::Insert(T *obj) {
-    cout << "here 1" << endl;
-    Node<T> *insert_node = new Node<T>;
+    Node *insert_node = new Node;
     insert_node->value = *obj;
+    
     if (head_ == nullptr) {
-        head_ = insert_node;
+        head_ = new Node;
+        head_->value = *obj; 
         return true;
     }
-    Node<T> *next_node = new Node<T>;
-    next_node = head_;
+    
+    Node<T> *next_node = head_; //traversal nodes dont need to be dynamically allocated
 
     for (int i = 0; i < size(); i++) {
-        if (*(next_node->link)->value > *(insert_node)->value) {
+        if ((next_node->link->value > insert_node->value) && (next_node->link != nullptr)) {
             insert_node->link = next_node->link;
             next_node->link = insert_node;
             size_++;
+            //NEED TO CHECK IS LINK IS NULL
 
             return true;
         } else if (next_node->value == insert_node->value) {
