@@ -2,13 +2,14 @@
 #define LINKED_LIST_H_
 #include <iostream>
 #include <string>
+#include <fstream>
 
 using namespace std;
 
 template <class T>
 struct Node {
-    Node *link = nullptr;
-    T* value = 0;
+    Node<T> *link = nullptr;
+    T *value = 0;
 };
 
 template <class T>
@@ -21,7 +22,7 @@ public:
     // deconstructor
     ~List342();
 
-    // takes input from a file and builds list 
+    // takes input from a file and builds list
     bool BuildList(string file_name);
 
     bool Insert(T *obj);
@@ -72,53 +73,81 @@ List342<T>::List342() : head_(nullptr) {
 
 template <class T>
 List342<T>::~List342() {
-
 }
 
 template <class T>
 bool List342<T>::BuildList(string file_name) {
-    ifstream in_file;
-    Node<T> temp = new Node<T>();
 
+    ifstream in_file(file_name);
+    //in_file.open(file_name);
+    while (!in_file.eof()) {
+        T new_obj; 
+        in_file >> new_obj;
+         cout << new_obj << endl;
 
+        Insert(new_obj);
+    }
+    in_file.close();
+    return true;
 }
 
 template <class T>
 bool List342<T>::Insert(T *obj) {
-    Node *insert_node = new Node;
-    insert_node->value = *obj;
-    
+    cout << *obj << endl; 
+    Node<T> *insert_node = new Node<T>;
+    insert_node->value = obj;
+
+    // empty list
     if (head_ == nullptr) {
-        head_ = new Node;
-        head_->value = *obj; 
+        head_ = insert_node;
+        head_->link = nullptr;
         return true;
     }
-    
-    Node<T> *next_node = head_; //traversal nodes dont need to be dynamically allocated
 
-    for (int i = 0; i < size(); i++) {
-        if ((next_node->link->value > insert_node->value) && (next_node->link != nullptr)) {
-            insert_node->link = next_node->link;
+    for (Node<T> *next_node = head_; next_node != nullptr; next_node = next_node->link) {
+
+        // end of list
+        if (next_node->link == nullptr) {
             next_node->link = insert_node;
+            insert_node->link = nullptr;
             size_++;
-            //NEED TO CHECK IS LINK IS NULL
-
             return true;
-        } else if (next_node->value == insert_node->value) {
+        }
+
+        if (*(next_node->value) == *(insert_node->value)) {
             insert_node = nullptr;
             delete insert_node;
             return false;
         }
+
+        // if insert_node needs to be put at front
+        if ((*head_->value) > *(insert_node->value)) {
+            insert_node->link = head_;
+            head_ = insert_node;
+            size_++;
+            return true;
+        }
+
+        // middle of list
+        if (*(next_node->link->value) > *(insert_node->value)) {
+            insert_node->link = next_node->link;
+            next_node->link = insert_node;
+            size_++;
+            return true;
+        }
     }
+
     cout << "Failed to insert " << *obj << endl;
     return false;
 }
+/*
 template <class T>
 bool List342<T>::ClearNode(Node<T> *clear_node) {
     clear_node = nullptr;
     delete clear_node;
     return true;
 }
+*/
 
 template <class T>
 int List342<T>::size() const {
@@ -132,15 +161,10 @@ Node<T> &List342<T>::head() const {
 
 template <class T>
 ostream &operator<<(ostream &stream, const List342<T> &print_list) {
-    Node<T> *next_node = new Node<T>;
-    next_node = print_list.head_;
 
-    for (int i = 0; i < print_list.size(); i++) {
-        stream << next_node->value;
-        next_node = next_node->link;
+    for (Node<T> *next_node = print_list.head_; next_node != nullptr; next_node = next_node->link) {
+        stream << *(next_node->value) << " ";
     }
-    next_node = nullptr;
-    delete next_node;
     return stream;
 }
 
