@@ -2,36 +2,29 @@
 
 int main() {
 
-    List342<int> test;
+    List342<int> test4;
 
-    int a = 4;
-    int b = 5;
-    int c = 7;
-    int d = 6;
-    int e = 1;
+    int b1 = 42;
+    int b2 = 17;
+    int b3 = 63;
+    int b4 = 9;
+    int b5 = 88;
+    int b6 = 29;
+    int b7 = 54;
+    int b8 = 76;
+    int b9 = 31;
 
-    int f = 6;
+    test4.Insert(&b1);
+    test4.Insert(&b2);
+    test4.Insert(&b3);
+    test4.Insert(&b4);
+    test4.Insert(&b5);
+    test4.Insert(&b6);
+    test4.Insert(&b7);
+    test4.Insert(&b8);
+    test4.Insert(&b9);
 
-    int g = 2;
-    int h = 8;
-    int i = 3;
+    cout << test4 << endl;
 
-    test.Insert(&a);
-    test.Insert(&b);
-    test.Insert(&c);
-    test.Insert(&d);
-    test.Insert(&e);
-    test.Insert(&d);
-    test.Insert(&f);
-    test.Insert(&g);
-    test.Insert(&h);
-    test.Insert(&i);
-
-    cout << test << endl;
-
-    List342<int> test2;
-    test2.BuildList("build_list.txt");
-
-    cout << test2 << endl;
-
+    
 }
