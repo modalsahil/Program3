@@ -1,5 +1,5 @@
-#ifndef LINKED_LIST_H_
-#define LINKED_LIST_H_
+#ifndef nextED_LIST_H_
+#define nextED_LIST_H_
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -8,7 +8,7 @@ using namespace std;
 
 template <class T>
 struct Node {
-    Node<T> *link = nullptr;
+    Node<T> *next = nullptr;
     T *value = 0;
 };
 
@@ -24,8 +24,6 @@ public:
 
     // takes input from a file and builds list
     bool BuildList(string file_name);
-
-    void Print();
 
     bool Insert(T *obj);
 
@@ -46,46 +44,32 @@ public:
     bool Merge(List342 &list1); // definetely uses DeleteList() //O(n) CANNOT ALLOCATE MEMMORY
 
     // operator overloads
-    List342 &operator+=(const List342 &other); // O(n)
+    List342 &operator+=(const List342 &other); // O(n) x+= b , x = x  +b
 
-    List342 operator+(const List342 &other) const; // O(n)
+    List342 operator+(const List342 &other) const; // O(n) //c = x + b 
 
     template <typename U>
     friend ostream &operator<<(ostream &stream, const List342<U> &print_list);
 
     bool operator==(const List342 &other) const;
 
-    List342 &operator=(List342 &other); // needs to dcall DeleteList();
+    List342<T> &operator=(List342<T> &other); // needs to dcall DeleteList();
 
 private:
-    // private method to Sort list
-    // bool Sort(Node* insert_node);
-
-    // checks to see if a T objct is in the list.
     bool ClearNode(Node<T> *clear_node);
-    bool Contains(const T *obj) const;
 
     Node<T> *head_;
     unsigned int size_;
 };
 
-
-template <class T>
-List342<T>::~List342() {
-    for (Node<T> *next_node = head_; next_node != nullptr; next_node = next_node->link) {
-        Node<T> *temp_node = next_node;
-       ClearNode(temp_node);
-       // delete temp_node->value;
-        //delete temp_node;
-    }
-}
-
-
 template <class T>
 List342<T>::List342() : head_(nullptr) {
 }
 
-
+template <class T>
+List342<T>::~List342() {
+    DeleteList();
+}
 
 template <class T>
 bool List342<T>::BuildList(string file_name) {
@@ -117,36 +101,36 @@ bool List342<T>::Insert(T *obj) {
     // empty list
     if (head_ == nullptr) {
         head_ = insert_node;
-        head_->link = nullptr;
+        head_->next = nullptr;
         return true;
     }
     if ((*head_->value) > *(insert_node->value)) {
-        insert_node->link = head_;
+        insert_node->next = head_;
         head_ = insert_node;
         size_++;
         return true;
     }
 
-    for (Node<T> *next_node = head_; next_node != nullptr; next_node = next_node->link) {
+    for (Node<T> *current_node = head_; current_node != nullptr; current_node = current_node->next) {
 
         // if equal
-        if (*(next_node->value) == *(insert_node->value)) {
+        if (*(current_node->value) == *(insert_node->value)) {
             delete insert_node->value;
             delete insert_node;
             return false;
         }
         // end of list
-        if (next_node->link == nullptr) {
-            next_node->link = insert_node;
-            insert_node->link = nullptr;
+        if (current_node->next == nullptr) {
+            current_node->next = insert_node;
+            insert_node->next = nullptr;
             size_++;
             return true;
         }
 
         // middle of list
-        if (*(next_node->link->value) > *(insert_node->value)) {
-            insert_node->link = next_node->link;
-            next_node->link = insert_node;
+        if (*(current_node->next->value) > *(insert_node->value)) {
+            insert_node->next = current_node->next;
+            current_node->next = insert_node;
             size_++;
             return true;
         }
@@ -171,30 +155,30 @@ bool List342<T>::Remove(T target, T &result) {
     if ((*(head_->value) == target)) {
         result = *(head_->value);
         Node<T> *temp_head = head_;
-        head_ = head_->link;
+        head_ = head_->next;
         ClearNode(temp_head);
         size_--;
         return true;
     }
 
-    for (Node<T> *next_node = head_; next_node != nullptr; next_node = next_node->link) {
+    for (Node<T> *current_node = head_; current_node != nullptr; current_node = current_node->next) {
 
         // if target is at the last node.
-        if ((next_node->link == nullptr) && (*(next_node->value) == target)) {
-            result = *(next_node->value);
-            delete next_node->value; // no need to create a tempt node because no memmory leak
-            delete next_node;        // occures do to deleting next_node.
-            ClearNode(next_node);
+        if ((current_node->next == nullptr) && (*(current_node->value) == target)) {
+            result = *(current_node->value);
+            delete current_node->value; // no need to create a tempt node because no memmory leak
+            delete current_node;        // occures do to deleting current_node.
+            ClearNode(current_node);
             size_--;
             return true;
         }
 
         // middle
-        if (*(next_node->link->value) == target) {
-            // Save node as temp pointer, change links and then delete temp pointer
-            Node<T> *temp_node = next_node->link;
+        if (*(current_node->next->value) == target) {
+            // Save node as temp pointer, change nexts and then delete temp pointer
+            Node<T> *temp_node = current_node->next;
             result = *(temp_node->value);
-            next_node->link = next_node->link->link;
+            current_node->next = current_node->next->next;
             ClearNode(temp_node);
             size_--;
             return true;
@@ -207,11 +191,11 @@ bool List342<T>::Remove(T target, T &result) {
 template <class T>
 bool List342<T>::Peek(T target, T &result) const {
 
-    for (Node<T> *next_node = head_; next_node != nullptr; next_node = next_node->link) {
+    for (Node<T> *current_node = head_; current_node != nullptr; current_node = current_node->next) {
 
         // if middle or end
-        if ((*(next_node->value) == target)) {
-            result = *(next_node->value);
+        if ((*(current_node->value) == target)) {
+            result = *(current_node->value);
             return true;
         }
     }
@@ -229,35 +213,66 @@ Node<T> &List342<T>::head() const {
     return *head_;
 }
 
+/*
 template <class T>
 void List342<T>::DeleteList() {
+    cout << "here1" << endl;
+
+    for (Node<T> *current_node = head_; current_node != nullptr; current_node = current_node->next) {
+
+        //save node after current_node to not lose the list.
+        Node<T> *temp_node = current_node->next; //curent gets deleted
+
+        //clear the node before temp_node. 
+        ClearNode(current_node);
+    }
 }
+*/
+
+template <class T>
+void List342<T>::DeleteList(){
+    Node<T>* current_node = head_;
+    while(current_node != nullptr){
+        Node<T>* temp_node = current_node;
+        current_node = current_node->next;
+        delete temp_node->value;
+        delete temp_node;
+    }
+    head_ = nullptr;
+}
+
+
 
 template <class T>
 ostream &operator<<(ostream &stream, const List342<T> &print_list) {
 
-    for (Node<T> *next_node = print_list.head_; next_node != nullptr; next_node = next_node->link) {
-        // cout << *(next_node->value) << endl;
-        stream << *(next_node->value) << " ";
+    for (Node<T> *current_node = print_list.head_; current_node != nullptr; current_node = current_node->next) {
+        stream << *(current_node->value) << " ";
     }
     return stream;
 }
 
 template <class T>
-inline void List342<T>::Print() {
+List342<T> &List342<T>::operator=(List342<T> &other) {
+    if(this!= &other){
+        DeleteList();
+        *(head_->data) = *(other.head_);
+        for(Node<T> current_node = head_->next; current_node != nullptr; current_node->next){
+            *(current_node->data) = *(other_node->data)
+        }
 
-    for (Node<T> *next_node = head_; next_node != nullptr; next_node = next_node->link) {
-        cout << *(next_node->value) << endl;
     }
+
 }
 
 template <class T>
 bool List342<T>::ClearNode(Node<T> *clear_node) {
+    // cout << "here" << endl;
+    cout << *(clear_node->value) << endl;
+
     if (clear_node != nullptr) {
         delete clear_node->value;
         delete clear_node;
-        //clear_node->value = nullptr;
-        clear_node = nullptr;
         return true;
     }
     cerr << "Failed to Delete Node with value: " << *(clear_node->value) << "\n";

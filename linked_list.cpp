@@ -23,8 +23,20 @@ int main() {
     test4.Insert(&b7);
     test4.Insert(&b8);
     test4.Insert(&b9);
-
     cout << test4 << endl;
 
-    
+    int b10 = 0;
+
+    test4.Remove(76, b10);
+    test4.Remove(31, b10);
+    cout << test4 << endl;
+
+    /*
+        test4.Remove(54, b10);
+        test4.Remove(9,b10);
+        test4.Remove(88, b10);
+        */
+
+    test4.DeleteList();
+    cout << test4 << endl;
 }
